@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8"/>
+    <title>家长后台登录</title>
+    <link href="http://apps.bdimg.com/libs/bootstrap/3.3.0/css/bootstrap.min.css" rel="stylesheet"/>
+    <!--font-awesome core css-->
+    <link href="//cdn.bootcss.com/font-awesome/4.3.0/css/font-awesome.min.css" rel="stylesheet"/>
+    <link rel="stylesheet" th:href="@{/css/drag.css}" />
+    <script src="http://apps.bdimg.com/libs/jquery/2.0.0/jquery.min.js"></script>
+    <script src="http://apps.bdimg.com/libs/bootstrap/3.3.0/js/bootstrap.min.js"></script>
+    <script th:src="@{/js/drag.js}"></script>
+</head>
+
+<body>
+<div class="container">
+    <div class="form row">
+        <form class="form-horizontal col-sm-offset-3 col-md-offset-3" id="login_form">
+            <h3 class="form-title">风筝桌面家长登录系统</h3>
+            <div class="col-sm-9 col-md-9">
+                <div class="form-group">
+                    <i class="fa fa-user fa-lg"></i>
+                    <input class="form-control required" type="text" placeholder="紧急联系电话"  id="username" autofocus="autofocus" maxlength="20"/>
+                </div>
+                <div class="form-group">
+                    <i class="fa fa-lock fa-lg"></i>
+                    <input class="form-control required" type="password" placeholder="家长控制密码" id="password"  maxlength="8"/>
+                </div>
+                <div class="form-group">
+                    <label class="checkbox">
+                        <div id="drag"></div>
+                    </label>
+                    <hr />
+                </div>
+                <div class="form-group">
+                    <input type="button" class="btn btn-success pull-right" id="login" value="登录 "/>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+
+</body>
+
+<script type="text/javascript">
+    $('#drag').drag();
+    $(function () {
+
+
+        $("#login").click(function () {
+            if(validationFlag){
+                var username = $("#username").val();
+                var password = $("#password").val();
+                var str = username+"/"+password;
+                location.href  = "doLogin/"+str;
+            }else {
+                alert("请输入验证码");
+            }
+        })
+    })
+</script>
+</html>
