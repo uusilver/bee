@@ -44,10 +44,6 @@ public class StaticPageController {
         return"home";
     }
 
-    @GetMapping("/appControlTable")
-    public String appControlTable(){
-        return "app_control_table";
-    }
 
     @PostMapping("/doLogin")
     @ResponseBody

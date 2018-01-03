@@ -1,10 +1,60 @@
 <!DOCTYPE html>
-<html lang="en">
+<html xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8"/>
-    <title>123</title>
+    <title>风筝桌面家长控制平台</title>
+    <link href="http://apps.bdimg.com/libs/bootstrap/3.3.0/css/bootstrap.min.css" rel="stylesheet"/>
+    <!--font-awesome core css-->
+    <link href="//cdn.bootcss.com/font-awesome/4.3.0/css/font-awesome.min.css" rel="stylesheet"/>
+    <link rel="stylesheet" th:href="@{/css/response-table.css}" />
+    <script src="http://apps.bdimg.com/libs/jquery/2.0.0/jquery.min.js"></script>
+    <script src="http://apps.bdimg.com/libs/bootstrap/3.3.0/js/bootstrap.min.js"></script>
 </head>
-<body>
-<a href="/bee/appControlTable">table</a>
+<body class="container">
+<nav class="navbar navbar-default navbar-fixed-top" role="navigation" style="padding-left:100px">
+    <div class="navbar-header">
+        <a class="navbar-brand" href="#">风筝主页</a>
+    </div>
+    <div>
+        <ul class="nav navbar-nav">
+            <li class="active"><a href="/bee/home">APP远程控制</a></li>
+            <li><a href="/bee/getHelpInfoByEmergencePhoneNo">紧急求助信息查看</a></li>
+        </ul>
+    </div>
+    <!--<div style="padding-right:100px">-->
+        <!--<form class="navbar-form navbar-right" role="search">-->
+            <!--<div class="form-group">-->
+                <!--<input type="text" class="form-control" placeholder="Search" />-->
+            <!--</div>-->
+            <!--<button type="submit" class="btn btn-default">提交</button>-->
+        <!--</form>-->
+    <!--</div>-->
+</nav>
+
+<table>
+    <thead>
+    <tr>
+        <th>支付</th>
+        <th>日期</th>
+        <th>金额</th>
+        <th>周期</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr>
+        <td data-label="支付"><img src="app_img/android_standard_icon.png"/></td>
+        <td data-label="日期">02/01/2015</td>
+        <td data-label="金额">￥2,311</td>
+        <td data-label="周期">01/01/2015 - 01/31/2015</td>
+    </tr>
+    <tr>
+        <td data-label="支付">支付 #2</td>
+        <td data-label="日期">03/01/2015</td>
+        <td data-label="金额">￥3,211</td>
+        <td data-label="周期">02/01/2015 - 02/28/2015</td>
+    </tr>
+    </tbody>
+</table>
+
 </body>
 </html>
