@@ -40,6 +40,7 @@ public class WebSecurityConfig2 extends WebMvcConfigurerAdapter {
         // 排除配置
         addInterceptor.excludePathPatterns("/error");
         addInterceptor.excludePathPatterns("/login**");
+        addInterceptor.excludePathPatterns("/doLogin**");
 
         // 拦截配置
         addInterceptor.addPathPatterns("/**");
@@ -51,6 +52,8 @@ public class WebSecurityConfig2 extends WebMvcConfigurerAdapter {
         public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler)
                 throws Exception {
             HttpSession session = request.getSession();
+            if(request.getRequestURI().contains("doLogin"))
+                return true;
             if (session.getAttribute(SESSION_KEY) != null)
                 return true;
 
