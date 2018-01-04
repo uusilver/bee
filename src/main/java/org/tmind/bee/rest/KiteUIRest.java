@@ -12,8 +12,11 @@ import org.springframework.web.bind.annotation.*;
 import org.tmind.bee.entity.*;
 import org.tmind.bee.repository.*;
 
+import java.io.UnsupportedEncodingException;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * TODO The class KiteUIRest is supposed to be documented...
@@ -89,7 +92,7 @@ public class KiteUIRest {
         return helpInfoRepository.save(helpLocationInfo);
     }
 
-    @RequestMapping(value = "/postCrashInfo", method = RequestMethod.POST)
+    @RequestMapping(value = "/rest/postCrashInfo", method = RequestMethod.POST)
     public String postCrashInfo(@RequestParam(value = "crashInfo", required = true) String crashInfo) {
         CrashInfoModel model = new CrashInfoModel();
         model.setCrashinfo(crashInfo);
@@ -106,22 +109,61 @@ public class KiteUIRest {
      * @param appInfo
      * @return
      */
-    @RequestMapping(value = "/appInfo", method = RequestMethod.POST)
-    public String updateAppInfo(@RequestParam(value = "appInfo", required = true) String appInfo) {
+    @RequestMapping(value = "/rest/appInfo", method = RequestMethod.POST, produces="text/plain;charset=UTF-8")
+    public String updateAppInfo(@RequestParam(value = "appInfo", required = true) String appInfo) throws UnsupportedEncodingException {
+//        appInfo = new String(appInfo.getBytes("ISO-8859-1"),"UTF-8");
         List<IconModel> iconModelList = iconModelRepository.findAll();
+        Map<String, String> iconMap = getIconMap(iconModelList);
         List<AppInfoModel> savedAppInfoModelList = appInfoRepository.findAll();
-        boolean isUpdated = true;
-        if(savedAppInfoModelList==null || savedAppInfoModelList.size()==0){
-            isUpdated = false;
-        }
+
         String targetPhoneNo = appInfo.split("\\|")[0];
         String[] appInfoList = appInfo.split("\\|")[1].split("@");
-
+        for(String str : appInfoList){
+            String[] appInfoStr = str.split("\\$");
+            String pkg = appInfoStr[1];
+            AppInfoModel model = retrieveModel(savedAppInfoModelList, pkg, targetPhoneNo);
+            model.setTargetPhoneNo(targetPhoneNo);
+            model.setApplicationName(appInfoStr[0]);
+            model.setPkg(pkg);
+            model.setAllowFlag(appInfoStr[2]);
+            model.setStartTimeHour(appInfoStr[3]);
+            model.setStartTimeMinute(appInfoStr[4]);
+            model.setEndTimeHour(appInfoStr[5]);
+            model.setEndTimeMinute(appInfoStr[6]);
+            model.setSystemFlag(appInfoStr[7]);
+            model.setImgLocation(getIconPath(iconMap, pkg));
+            appInfoRepository.save(model);
+        }
         return "success";
     }
 
+    private AppInfoModel retrieveModel(List<AppInfoModel> appInfoModels, String pkg, String targetPhoneNo){
+        AppInfoModel resultModel = new AppInfoModel();
+        if(appInfoModels!=null && appInfoModels.size()>0) {
+            for (AppInfoModel model : appInfoModels) {
+                if (targetPhoneNo.equals(model.getTargetPhoneNo()) && pkg.equals(model.getPkg())) {
+                    resultModel = model;
+                    break;
+                }
+            }
+        }
+        return resultModel;
+    }
     private void persistAppModel(AppInfoModel appInfoModel){
         appInfoRepository.save(appInfoModel);
+    }
+
+    private String getIconPath(Map<String, String> map, String pkg){
+        return map.get(pkg) == null? map.get("default") : map.get(pkg);
+    }
+
+    private Map<String, String> getIconMap(List<IconModel> list){
+        Map<String, String> map = new HashMap<String, String>();
+        map.put("default", "app_img/android_standard_icon.png");
+        for(IconModel model : list){
+            map.put(model.getIconKey(), model.getIconPath());
+        }
+        return map;
     }
 
 }

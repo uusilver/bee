@@ -54,6 +54,8 @@ public class WebSecurityConfig2 extends WebMvcConfigurerAdapter {
             HttpSession session = request.getSession();
             if(request.getRequestURI().contains("doLogin"))
                 return true;
+            if(request.getRequestURI().contains("rest"))
+                return true;
             if (session.getAttribute(SESSION_KEY) != null)
                 return true;
 

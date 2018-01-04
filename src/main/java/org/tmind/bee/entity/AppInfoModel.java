@@ -23,7 +23,7 @@ public class AppInfoModel {
     private String targetPhoneNo;
     private String applicationName;
     private String pkg;
-    private String useFlag;
+    private String allowFlag;
     private String startTimeHour;
     private String startTimeMinute;
     private String endTimeHour;
@@ -63,12 +63,12 @@ public class AppInfoModel {
         this.pkg = pkg;
     }
 
-    public String getUseFlag() {
-        return useFlag;
+    public String getAllowFlag() {
+        return allowFlag;
     }
 
-    public void setUseFlag(String useFlag) {
-        this.useFlag = useFlag;
+    public void setAllowFlag(String allowFlag) {
+        this.allowFlag = allowFlag;
     }
 
     public String getStartTimeHour() {

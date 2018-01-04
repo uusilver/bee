@@ -9,6 +9,13 @@ server:
 #ddl-auto:update
 #------------------------------------------
 spring:
+  http:
+    encoding:
+      force: true
+      charset: UTF-8
+      enabled: true
+      uri-encoding: UTF-8
+
   datasource:
     driver-class-name: com.mysql.jdbc.Driver
     url: jdbc:mysql://localhost:3306/bee
