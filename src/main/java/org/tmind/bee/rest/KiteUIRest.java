@@ -9,12 +9,8 @@ package org.tmind.bee.rest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.web.bind.annotation.*;
-import org.tmind.bee.entity.CrashInfoModel;
-import org.tmind.bee.entity.HelpLocationInfo;
-import org.tmind.bee.entity.UserInfo;
-import org.tmind.bee.repository.CrashInfoRepository;
-import org.tmind.bee.repository.HelpInfoRepository;
-import org.tmind.bee.repository.UserInfoRepository;
+import org.tmind.bee.entity.*;
+import org.tmind.bee.repository.*;
 
 import java.util.Date;
 import java.util.List;
@@ -37,6 +33,12 @@ public class KiteUIRest {
 
     @Autowired
     private CrashInfoRepository crashInfoRepository;
+
+    @Autowired
+    private IconModelRepository iconModelRepository;
+
+    @Autowired
+    private AppInfoRepository appInfoRepository;
 
     //imei+emergencephone+password
     @RequestMapping("/rest/regist/{info:.+}")
@@ -97,5 +99,29 @@ public class KiteUIRest {
         return "success";
     }
 
+
+    /**
+     *
+     * 13851483034 | applicationName $ packagename @   applicationName $ packagename @
+     * @param appInfo
+     * @return
+     */
+    @RequestMapping(value = "/appInfo", method = RequestMethod.POST)
+    public String updateAppInfo(@RequestParam(value = "appInfo", required = true) String appInfo) {
+        List<IconModel> iconModelList = iconModelRepository.findAll();
+        List<AppInfoModel> savedAppInfoModelList = appInfoRepository.findAll();
+        boolean isUpdated = true;
+        if(savedAppInfoModelList==null || savedAppInfoModelList.size()==0){
+            isUpdated = false;
+        }
+        String targetPhoneNo = appInfo.split("\\|")[0];
+        String[] appInfoList = appInfo.split("\\|")[1].split("@");
+
+        return "success";
+    }
+
+    private void persistAppModel(AppInfoModel appInfoModel){
+        appInfoRepository.save(appInfoModel);
+    }
 
 }
