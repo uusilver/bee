@@ -137,6 +137,31 @@ public class KiteUIRest {
         return "success";
     }
 
+    /**
+     * 根据emergencePhoneNo获取UserInfo，接收ID参数
+     * @param emergencePhoneNo
+     * @return
+     */
+    @GetMapping("/rest/retreiveAppInfo/{emergencePhoneNo}")
+    public String retreiveAppInfo(@PathVariable("emergencePhoneNo") String emergencePhoneNo){
+        List<AppInfoModel> list = appInfoRepository.findByEmergenceCallNo(emergencePhoneNo);
+        StringBuilder result = new StringBuilder();
+        result.append(emergencePhoneNo +"|");
+        if(list!=null && list.size()>0)
+            for(AppInfoModel appInfoModel : list){
+                result.append(appInfoModel.getApplicationName()+"$"); //setApplicationName
+                result.append(appInfoModel.getPkg()+"$"); //setPkg
+                result.append(appInfoModel.getAllowFlag()+"$"); //setAllowFlag
+                result.append(appInfoModel.getStartTimeHour()+"$"); //setStartTimeHour
+                result.append(appInfoModel.getStartTimeMinute()+"$"); //setStartTimeMinute
+                result.append(appInfoModel.getEndTimeHour()+"$"); //setEndTimeHour
+                result.append(appInfoModel.getEndTimeMinute()+"$"); //setEndTimeMinute
+                result.append(appInfoModel.getSystemFlag()+"$"); //setSystemFlag
+                result.append("@");
+            }
+        return result.toString();
+    }
+
     private AppInfoModel retrieveModel(List<AppInfoModel> appInfoModels, String pkg, String targetPhoneNo){
         AppInfoModel resultModel = new AppInfoModel();
         if(appInfoModels!=null && appInfoModels.size()>0) {

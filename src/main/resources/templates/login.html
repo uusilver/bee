@@ -57,7 +57,7 @@
         slider.init();
 
         $("#login").click(function () {
-            if(validationFlag){
+            if(true){
                 var username = $("#username").val();
                 var password = $("#password").val();
                 $.post("doLogin",
@@ -68,6 +68,8 @@
                 function (data) {
                     if("home"==data){
                         location.href  = "home";
+                    }else {
+                        alert("用户名，密码错误!");
                     }
                 })
             }else {

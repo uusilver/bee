@@ -56,6 +56,8 @@ public class WebSecurityConfig2 extends WebMvcConfigurerAdapter {
                 return true;
             if(request.getRequestURI().contains("rest"))
                 return true;
+            if(request.getRequestURI().contains("app"))
+                return true;
             if (session.getAttribute(SESSION_KEY) != null)
                 return true;
 
