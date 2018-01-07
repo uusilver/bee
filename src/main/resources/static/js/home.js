@@ -3,30 +3,40 @@
  */
 $(function () {
     var targetPhoneNo;
+    var loopTimes;
     $.get("getAppInfoFromDb",function (data) {
         targetPhoneNo = data.split("|")[0];
         var appInfoList = data.split("|")[1].split("@");
         var html = "";
+        loopTimes = appInfoList.length-1;
         for(var index=0; index<appInfoList.length-1; index++){
             var appInfoStr = appInfoList[index].split("$");
             html+="<tr>"
             html+="<td><img width='50' height='50' src='"+appInfoStr[0]+"'/></td>"
-            html+="<td>"+appInfoStr[1]+"</td>" //
-            html+="<td>"+appInfoStr[2]+"</td>" //pkg
+            var applicationId = "applicationName"+index;
+            html+="<td><span id='"+applicationId+"'>"+appInfoStr[1]+"</span></td>" //
+            var pkgId = "pkg"+index;
+            html+="<td><span id='"+pkgId+"'>"+appInfoStr[2]+"</span></td>" //
             //set use flag
             var useFlagText;
+            var userFlagId = "useFlag"+index;
             if("true" == appInfoStr[3]){
                 useFlagText = "开启";
-                html+="<><input class='switch' type='checkbox' checked='checked'/><span>"+useFlagText+"</span></td>" //use flag
+                html+="<td><input id='"+userFlagId+"' type='checkbox' checked='checked'/><span>"+useFlagText+"</span></td>" //use flag
             }else {
                 useFlagText = "关闭";
-                html+="<td><input class='switch'  type='checkbox'/><span>"+useFlagText+"</span></td>" //use flag
+                html+="<td><input id='"+userFlagId+"' type='checkbox'/><span>"+useFlagText+"</span></td>" //use flag
             }
-            html+="<td>"+getSelectedHour(appInfoStr[4])+"</td>"
-            html+="<td>"+getSelectedMinute(appInfoStr[5])+"</td>"
-            html+="<td>"+getSelectedHour(appInfoStr[6])+"</td>"
-            html+="<td>"+getSelectedMinute(appInfoStr[7])+"</td>"
-            html+="<td>"+appInfoStr[8]+"</td>" //system flag
+            var startHourId = "startHourId"+index;
+            html+="<td>"+getSelectedHour(appInfoStr[4], startHourId)+"</td>"
+            var startMinuteId = "startMinuteId"+index;
+            html+="<td>"+getSelectedMinute(appInfoStr[5],startMinuteId)+"</td>"
+            var endHourId = "endHourId"+index;
+            html+="<td>"+getSelectedHour(appInfoStr[6], endHourId)+"</td>"
+            var endMinuteId = "endMinuteId"+index;
+            html+="<td>"+getSelectedMinute(appInfoStr[7], endMinuteId)+"</td>"
+            var systemFlagId = "systemFlag"+index;
+            html+="<td><span id='"+systemFlagId+"'>"+appInfoStr[8]+"</span></td>" //system flag
             html+="</tr>"
         }//end for
         $("#app_info_table").html(html);
@@ -40,10 +50,37 @@ $(function () {
                 $(this).next('span').text('关闭')
             }
         });
+        
+        $('#save').on('click',function () {
+            var result = targetPhoneNo+"|";
+            for(var index=0;index<loopTimes; index++){
+                var temp;
+                var applicationName = $("#applicationName"+index).text();
+                var pkg = $("#pkg"+index).text();
+                var userFlag;
+                if($('#useFlag'+index).is(':checked')) {
+                    userFlag = "true";
+                }else{
+                    userFlag = "false";
+                }
+                var startHour =  $("#startHourId"+index).find("option:selected").text();
+                var startMinute =  $("#startMinuteId"+index).find("option:selected").text();
+                var endHour = $("#endHourId"+index).find("option:selected").text();
+                var endMinute = $("#endMinuteId"+index).find("option:selected").text();
+                var systemFlag = $("#systemFlag"+index).text();
+                temp = applicationName+"$"+pkg+"$"+userFlag+"$"+startHour+"$"+startMinute+"$"+endHour+"$"+endMinute+"$"+systemFlag+"$"+"@";
+                result+=temp;
+            }
+            $.post('rest/appInfo',{appInfo:result},function (data) {
+                if(data == "success"){
+                    alert("保存成功");
+                }
+            })
+        })
     })
 })
 
-function getSelectedHour(hour){
+function getSelectedHour(hour, id){
 
     var hourArray = new Array;
     hourArray.push("<option value='8:00'>8:00</option>  ");
@@ -106,7 +143,7 @@ function getSelectedHour(hour){
     if("22:00" == hour){
         hourArray[14] = "<option value='22:00' selected>22:00</option>  "
     }
-    var hourSelected = "<select>";
+    var hourSelected = "<select id='"+id+"'>";
     for(var index in hourArray){
         hourSelected += hourArray[index];
     }
@@ -114,7 +151,7 @@ function getSelectedHour(hour){
     return hourSelected;
 }
 
-function getSelectedMinute(minute){
+function getSelectedMinute(minute, id){
 
     var minuteArray = new Array;
     minuteArray.push("<option value='00'>00</option>  ");
@@ -127,23 +164,23 @@ function getSelectedMinute(minute){
     if("00" == minute){
         minuteArray[0] = "<option value='00' selected>00</option>  "
     }
-    if("9:00" == minute){
+    if("10" == minute){
         minuteArray[1] = "<option value='10' selected>10</option>  "
     }
-    if("10:00" == minute){
+    if("20" == minute){
         minuteArray[2] = "<option value='20' selected>20</option>  "
     }
-    if("11:00" == minute){
+    if("30" == minute){
         minuteArray[3] = "<option value='30' selected>30</option>  "
     }
-    if("12:00" == minute){
+    if("40" == minute){
         minuteArray[4] = "<option value='40' selected>40</option>  "
     }
-    if("13:00" == minute){
+    if("50" == minute){
         minuteArray[5] = "<option value='50' selected>50</option>  "
     }
 
-    var minuteSelected = "<select>";
+    var minuteSelected = "<select id='"+id+"'>";
     for(var index in minuteArray){
         minuteSelected += minuteArray[index];
     }
