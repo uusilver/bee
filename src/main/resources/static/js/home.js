@@ -22,10 +22,10 @@ $(function () {
             var userFlagId = "useFlag"+index;
             if("true" == appInfoStr[3]){
                 useFlagText = "开启";
-                html+="<td><input id='"+userFlagId+"' type='checkbox' checked='checked'/><span>"+useFlagText+"</span></td>" //use flag
+                html+="<td><input class='switch' id='"+userFlagId+"' type='checkbox' checked='checked'/><span>"+useFlagText+"</span></td>" //use flag
             }else {
                 useFlagText = "关闭";
-                html+="<td><input id='"+userFlagId+"' type='checkbox'/><span>"+useFlagText+"</span></td>" //use flag
+                html+="<td><input class='switch' id='"+userFlagId+"' type='checkbox'/><span>"+useFlagText+"</span></td>" //use flag
             }
             var startHourId = "startHourId"+index;
             html+="<td>"+getSelectedHour(appInfoStr[4], startHourId)+"</td>"

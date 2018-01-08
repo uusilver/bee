@@ -57,7 +57,7 @@
         slider.init();
 
         $("#login").click(function () {
-            if(true){
+            if(validationFlag){
                 var username = $("#username").val();
                 var password = $("#password").val();
                 $.post("doLogin",
