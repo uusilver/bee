@@ -11,6 +11,7 @@ import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.web.bind.annotation.*;
 import org.tmind.bee.entity.*;
 import org.tmind.bee.repository.*;
+import org.tmind.bee.service.AppInfoService;
 
 import java.io.UnsupportedEncodingException;
 import java.util.Date;
@@ -38,7 +39,7 @@ public class KiteUIRest {
     private CrashInfoRepository crashInfoRepository;
 
     @Autowired
-    private IconModelRepository iconModelRepository;
+    private AppInfoService appInfoService;
 
     @Autowired
     private AppInfoRepository appInfoRepository;
@@ -110,31 +111,9 @@ public class KiteUIRest {
      * @return
      */
     @RequestMapping(value = "/rest/appInfo", method = RequestMethod.POST, produces="text/plain;charset=UTF-8")
-    public String updateAppInfo(@RequestParam(value = "appInfo", required = true) String appInfo) throws UnsupportedEncodingException {
+    public String updateAppInfo(@RequestParam(value = "appInfo", required = true) String appInfo) throws Exception {
 //        appInfo = new String(appInfo.getBytes("ISO-8859-1"),"UTF-8");
-        List<IconModel> iconModelList = iconModelRepository.findAll();
-        Map<String, String> iconMap = getIconMap(iconModelList);
-        List<AppInfoModel> savedAppInfoModelList = appInfoRepository.findAll();
-
-        String targetPhoneNo = appInfo.split("\\|")[0];
-        String[] appInfoList = appInfo.split("\\|")[1].split("@");
-        for(String str : appInfoList){
-            String[] appInfoStr = str.split("\\$");
-            String pkg = appInfoStr[1];
-            AppInfoModel model = retrieveModel(savedAppInfoModelList, pkg, targetPhoneNo);
-            model.setTargetPhoneNo(targetPhoneNo);
-            model.setApplicationName(appInfoStr[0]);
-            model.setPkg(pkg);
-            model.setAllowFlag(appInfoStr[2]);
-            model.setStartTimeHour(appInfoStr[3]);
-            model.setStartTimeMinute(appInfoStr[4]);
-            model.setEndTimeHour(appInfoStr[5]);
-            model.setEndTimeMinute(appInfoStr[6]);
-            model.setSystemFlag(appInfoStr[7]);
-            model.setImgLocation(getIconPath(iconMap, pkg));
-            appInfoRepository.save(model);
-        }
-        return "success";
+        return appInfoService.saveOrUpdateAppInfo(appInfo);
     }
 
     /**
@@ -162,33 +141,5 @@ public class KiteUIRest {
         return result.toString();
     }
 
-    private AppInfoModel retrieveModel(List<AppInfoModel> appInfoModels, String pkg, String targetPhoneNo){
-        AppInfoModel resultModel = new AppInfoModel();
-        if(appInfoModels!=null && appInfoModels.size()>0) {
-            for (AppInfoModel model : appInfoModels) {
-                if (targetPhoneNo.equals(model.getTargetPhoneNo()) && pkg.equals(model.getPkg())) {
-                    resultModel = model;
-                    break;
-                }
-            }
-        }
-        return resultModel;
-    }
-    private void persistAppModel(AppInfoModel appInfoModel){
-        appInfoRepository.save(appInfoModel);
-    }
-
-    private String getIconPath(Map<String, String> map, String pkg){
-        return map.get(pkg) == null? map.get("default") : map.get(pkg);
-    }
-
-    private Map<String, String> getIconMap(List<IconModel> list){
-        Map<String, String> map = new HashMap<String, String>();
-        map.put("default", "app_img/android_standard_icon.png");
-        for(IconModel model : list){
-            map.put(model.getIconKey(), model.getIconPath());
-        }
-        return map;
-    }
 
 }
