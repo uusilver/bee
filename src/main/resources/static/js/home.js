@@ -71,11 +71,15 @@ $(function () {
                 temp = applicationName+"$"+pkg+"$"+userFlag+"$"+startHour+"$"+startMinute+"$"+endHour+"$"+endMinute+"$"+systemFlag+"$"+"@";
                 result+=temp;
             }
-            $.post('rest/appInfo',{appInfo:result},function (data) {
-                if(data == "success"){
-                    alert("保存成功");
-                }
-            })
+            if(result.length>15){
+                $.post('saveAppInfo',{appInfo:result},function (data) {
+                    if(data == "success"){
+                        alert("保存成功");
+                    }
+                })
+            }else {
+                alert("数据错误，无法保存");
+            }
         })
     })
 })

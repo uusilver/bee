@@ -44,6 +44,9 @@ public class KiteUIRest {
     @Autowired
     private AppInfoRepository appInfoRepository;
 
+    @Autowired
+    private AppInfoCtrlRepository appInfoCtrlRepository;
+
     //imei+emergencephone+password
     @RequestMapping("/rest/regist/{info:.+}")
     UserInfo regist(@PathVariable String info) {
@@ -123,22 +126,31 @@ public class KiteUIRest {
      */
     @GetMapping("/rest/retreiveAppInfo/{emergencePhoneNo}")
     public String retreiveAppInfo(@PathVariable("emergencePhoneNo") String emergencePhoneNo){
-        List<AppInfoModel> list = appInfoRepository.findByEmergenceCallNo(emergencePhoneNo);
-        StringBuilder result = new StringBuilder();
-        result.append(emergencePhoneNo +"|");
-        if(list!=null && list.size()>0)
-            for(AppInfoModel appInfoModel : list){
-                result.append(appInfoModel.getApplicationName()+"$"); //setApplicationName
-                result.append(appInfoModel.getPkg()+"$"); //setPkg
-                result.append(appInfoModel.getAllowFlag()+"$"); //setAllowFlag
-                result.append(appInfoModel.getStartTimeHour()+"$"); //setStartTimeHour
-                result.append(appInfoModel.getStartTimeMinute()+"$"); //setStartTimeMinute
-                result.append(appInfoModel.getEndTimeHour()+"$"); //setEndTimeHour
-                result.append(appInfoModel.getEndTimeMinute()+"$"); //setEndTimeMinute
-                result.append(appInfoModel.getSystemFlag()+"$"); //setSystemFlag
-                result.append("@");
-            }
-        return result.toString();
+        List<AppInfoCtrl> appInfoCtrlList = appInfoCtrlRepository.findByEmergenceCallNo(emergencePhoneNo);
+        if(appInfoCtrlList!=null && appInfoCtrlList.size()>0){
+            AppInfoCtrl appInfoCtrl = appInfoCtrlList.get(0);
+            if(appInfoCtrl.getRefresh()>0){
+                List<AppInfoModel> list = appInfoRepository.findByEmergenceCallNo(emergencePhoneNo);
+                StringBuilder result = new StringBuilder();
+                result.append(emergencePhoneNo +"|");
+                if(list!=null && list.size()>0)
+                    for(AppInfoModel appInfoModel : list){
+                        result.append(appInfoModel.getApplicationName()+"$"); //setApplicationName
+                        result.append(appInfoModel.getPkg()+"$"); //setPkg
+                        result.append(appInfoModel.getAllowFlag()+"$"); //setAllowFlag
+                        result.append(appInfoModel.getStartTimeHour()+"$"); //setStartTimeHour
+                        result.append(appInfoModel.getStartTimeMinute()+"$"); //setStartTimeMinute
+                        result.append(appInfoModel.getEndTimeHour()+"$"); //setEndTimeHour
+                        result.append(appInfoModel.getEndTimeMinute()+"$"); //setEndTimeMinute
+                        result.append(appInfoModel.getSystemFlag()+"$"); //setSystemFlag
+                        result.append("@");
+                    }
+                appInfoCtrl.setRefresh(0); // no need to update to client
+                appInfoCtrlRepository.save(appInfoCtrl);
+                return result.toString();
+            }//need to push
+        }
+        return "0";
     }
 
 

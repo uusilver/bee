@@ -8,8 +8,10 @@ package org.tmind.bee.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.tmind.bee.entity.AppInfoCtrl;
 import org.tmind.bee.entity.AppInfoModel;
 import org.tmind.bee.entity.IconModel;
+import org.tmind.bee.repository.AppInfoCtrlRepository;
 import org.tmind.bee.repository.AppInfoRepository;
 import org.tmind.bee.repository.IconModelRepository;
 
@@ -32,6 +34,9 @@ public class AppInfoService {
     @Autowired
     private AppInfoRepository appInfoRepository;
 
+    @Autowired
+    private AppInfoCtrlRepository appInfoCtrlRepository;
+
     @Transactional
     public String saveOrUpdateAppInfo(String appInfo) throws Exception {
         //不会回滚
@@ -41,6 +46,17 @@ public class AppInfoService {
 
         String targetPhoneNo = appInfo.split("\\|")[0];
         String[] appInfoList = appInfo.split("\\|")[1].split("@");
+        List<AppInfoCtrl> appInfoCtrlList = appInfoCtrlRepository.findByEmergenceCallNo(targetPhoneNo);
+        if(appInfoCtrlList==null || appInfoCtrlList.size()==0){
+            AppInfoCtrl appInfoCtrl = new AppInfoCtrl();
+            appInfoCtrl.setTargetPhoneNo(targetPhoneNo);
+            appInfoCtrl.setRefresh(0); // no need to update to client
+            appInfoCtrlRepository.save(appInfoCtrl);
+        }
+        //数据库的数据比传来的数据要多，说明要删除
+        if(savedAppInfoModelList.size() > appInfoList.length){
+            cleanAppInfoInDB(savedAppInfoModelList, appInfoList);
+        }
         for(String str : appInfoList){
             String[] appInfoStr = str.split("\\$");
             String pkg = appInfoStr[1];
@@ -89,4 +105,20 @@ public class AppInfoService {
         return map;
     }
 
+    private void cleanAppInfoInDB(List<AppInfoModel> savedAppInfoModelList, String[] appInfoList){
+        for(AppInfoModel model : savedAppInfoModelList){
+            boolean deleteFlag = true;
+            for(String str : appInfoList){
+                String[] appInfoStr = str.split("\\$");
+                String pkg = appInfoStr[1];
+                if(model.getPkg().equals(pkg)){
+                    deleteFlag = false;
+                    break;
+                }
+            }// end of loop
+            if(deleteFlag){
+                appInfoRepository.delete(model.getId());
+            }
+        }
+    }
 }

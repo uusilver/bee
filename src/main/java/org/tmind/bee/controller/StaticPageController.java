@@ -11,14 +11,9 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import org.tmind.bee.config.WebSecurityConfig;
 import org.tmind.bee.config.WebSecurityConfig2;
-import org.tmind.bee.entity.AppInfoModel;
-import org.tmind.bee.entity.CrashInfoModel;
-import org.tmind.bee.entity.HelpLocationInfo;
-import org.tmind.bee.entity.UserInfo;
-import org.tmind.bee.repository.AppInfoRepository;
-import org.tmind.bee.repository.CrashInfoRepository;
-import org.tmind.bee.repository.HelpInfoRepository;
-import org.tmind.bee.repository.UserInfoRepository;
+import org.tmind.bee.entity.*;
+import org.tmind.bee.repository.*;
+import org.tmind.bee.service.AppInfoService;
 
 import javax.servlet.http.HttpSession;
 import java.text.SimpleDateFormat;
@@ -39,6 +34,12 @@ public class StaticPageController {
 
     @Autowired
     private AppInfoRepository appInfoRepository;
+
+    @Autowired
+    private AppInfoCtrlRepository appInfoCtrlRepository;
+
+    @Autowired
+    private AppInfoService appInfoService;
 
     @GetMapping("/login")
     public  String login() {
@@ -85,6 +86,20 @@ public class StaticPageController {
                 result.append("@");
             }
         return result.toString();
+    }
+
+    @RequestMapping(value = "/saveAppInfo", method = RequestMethod.POST, produces="text/plain;charset=UTF-8")
+    @ResponseBody
+    public String updateAppInfo(@RequestParam(value = "appInfo", required = true) String appInfo) throws Exception {
+//        appInfo = new String(appInfo.getBytes("ISO-8859-1"),"UTF-8");
+        String targetPhoneNo = appInfo.split("\\|")[0];
+        List<AppInfoCtrl> appInfoCtrlList = appInfoCtrlRepository.findByEmergenceCallNo(targetPhoneNo);
+        if(appInfoCtrlList!=null && appInfoCtrlList.size()>0){
+            AppInfoCtrl appInfoCtrl = appInfoCtrlList.get(0);
+            appInfoCtrl.setRefresh(1); // no need to update to client
+            appInfoCtrlRepository.save(appInfoCtrl);
+        }
+        return appInfoService.saveOrUpdateAppInfo(appInfo);
     }
 
 }
