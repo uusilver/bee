@@ -154,4 +154,18 @@ public class KiteUIRest {
     }
 
 
+    /**
+     * 根据emergencePhoneNo获取UserInfo，接收ID参数
+     * @param emergencePhoneNo
+     * @return
+     */
+    @GetMapping("/rest/isPhoneNotExist/{emergencePhoneNo}")
+    public String isPhoneNotExist(@PathVariable("emergencePhoneNo") String emergencePhoneNo){
+        List<UserInfo> userInfos = userInfoRepository.findByEmergencePhoneNo(emergencePhoneNo);
+        if(userInfos!=null && userInfos.size()>0){
+            return "false";
+        }else {
+            return "true";
+        }
+    }
 }

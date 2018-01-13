@@ -41,10 +41,9 @@ public class AppInfoService {
     public String saveOrUpdateAppInfo(String appInfo) throws Exception {
         //不会回滚
         List<IconModel> iconModelList = iconModelRepository.findAll();
-        Map<String, String> iconMap = getIconMap(iconModelList);
-        List<AppInfoModel> savedAppInfoModelList = appInfoRepository.findAll();
-
         String targetPhoneNo = appInfo.split("\\|")[0];
+        Map<String, String> iconMap = getIconMap(iconModelList);
+        List<AppInfoModel> savedAppInfoModelList = appInfoRepository.findByEmergenceCallNo(targetPhoneNo);
         String[] appInfoList = appInfo.split("\\|")[1].split("@");
         List<AppInfoCtrl> appInfoCtrlList = appInfoCtrlRepository.findByEmergenceCallNo(targetPhoneNo);
         if(appInfoCtrlList==null || appInfoCtrlList.size()==0){
