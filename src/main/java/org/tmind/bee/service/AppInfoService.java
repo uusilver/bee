@@ -57,20 +57,22 @@ public class AppInfoService {
             cleanAppInfoInDB(savedAppInfoModelList, appInfoList);
         }
         for(String str : appInfoList){
-            String[] appInfoStr = str.split("\\$");
-            String pkg = appInfoStr[1];
-            AppInfoModel model = retrieveModel(savedAppInfoModelList, pkg, targetPhoneNo);
-            model.setTargetPhoneNo(targetPhoneNo);
-            model.setApplicationName(appInfoStr[0]);
-            model.setPkg(pkg);
-            model.setAllowFlag(appInfoStr[2]);
-            model.setStartTimeHour(appInfoStr[3]);
-            model.setStartTimeMinute(appInfoStr[4]);
-            model.setEndTimeHour(appInfoStr[5]);
-            model.setEndTimeMinute(appInfoStr[6]);
-            model.setSystemFlag(appInfoStr[7]);
-            model.setImgLocation(getIconPath(iconMap, pkg));
-            appInfoRepository.save(model);
+            if(str.length()>1) {
+                String[] appInfoStr = str.split("\\$");
+                String pkg = appInfoStr[1];
+                AppInfoModel model = retrieveModel(savedAppInfoModelList, pkg, targetPhoneNo);
+                model.setTargetPhoneNo(targetPhoneNo);
+                model.setApplicationName(appInfoStr[0]);
+                model.setPkg(pkg);
+                model.setAllowFlag(appInfoStr[2]);
+                model.setStartTimeHour(appInfoStr[3]);
+                model.setStartTimeMinute(appInfoStr[4]);
+                model.setEndTimeHour(appInfoStr[5]);
+                model.setEndTimeMinute(appInfoStr[6]);
+                model.setSystemFlag(appInfoStr[7]);
+                model.setImgLocation(getIconPath(iconMap, pkg));
+                appInfoRepository.save(model);
+            }
         }
         return "success";
     }
