@@ -47,6 +47,9 @@ public class KiteUIRest {
     @Autowired
     private AppInfoCtrlRepository appInfoCtrlRepository;
 
+    @Autowired
+    private UserCommentRepository userCommentRepository;
+
     //imei+emergencephone+password
     @RequestMapping("/rest/regist/{info:.+}")
     UserInfo regist(@PathVariable String info) {
@@ -167,5 +170,27 @@ public class KiteUIRest {
         }else {
             return "true";
         }
+    }
+
+    /**
+     *
+     * @param username
+     * @param telno
+     * @param comment
+     * @return
+     */
+    @GetMapping("/rest/putUserComment/{username}/{telno}/{comment}")
+    public String putUserComment(@PathVariable("username") String username,
+                                 @PathVariable("telno") String telno,
+                                 @PathVariable("comment") String comment){
+        if(comment.length()>2500){
+            comment = comment.substring(0,2499);
+        }
+        UserComment userComment = new UserComment();
+        userComment.setUsername(username);
+        userComment.setTelno(telno);
+        userComment.setComment(comment);
+        userCommentRepository.save(userComment);
+        return "success";
     }
 }

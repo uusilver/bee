@@ -59,4 +59,10 @@ public class ServiceController {
         map.put("crashInfo",list);
         return "LoadCrashInfo";
     }
+
+    @RequestMapping("/logout")
+    public String logout(HttpSession session){
+        session.removeAttribute(WebSecurityConfig2.SESSION_KEY);
+        return "login";
+    }
 }
